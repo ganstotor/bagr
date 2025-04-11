@@ -8,17 +8,14 @@ import * as Google from 'expo-auth-session';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [isPhoneTab, setIsPhoneTab] = useState(false);
   const router = useRouter();
 
-  // Google Auth setup using expo-auth-session
   const [request, response, promptAsync] = Google.useAuthRequest(
     {
-      clientId: '635117684890-6fqmlf4gjbrgaudinvgaqth8asgh78id.apps.googleusercontent.com', // Use your Google OAuth Client ID here
-      redirectUri: Google.makeRedirectUri(), // This handles the redirect URL for your app
+      clientId: '635117684890-6fqmlf4gjbrgaudinvgaqth8asgh78id.apps.googleusercontent.com',
+      redirectUri: Google.makeRedirectUri(),
     },
-    null // Discovery document can be null
+    null
   );
 
   useEffect(() => {
@@ -29,9 +26,6 @@ export default function LoginScreen() {
     }
   }, [response]);
 
-
-
-  // Типизация credential как OAuthCredential
   const signInWithGoogle = async (credential: OAuthCredential) => {
     try {
       const userCredential = await signInWithCredential(auth, credential);
@@ -46,17 +40,12 @@ export default function LoginScreen() {
       }
     }
   };
-  
 
   const signIn = async () => {
     try {
-      if (isPhoneTab) {
-        // Handle phone number sign in here if needed
-      } else {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        console.log('Logged in: ', userCredential.user);
-        router.replace('/(driver)/home');
-      }
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('Logged in: ', userCredential.user);
+      router.replace('/(driver)/home');
     } catch (error: any) {
       console.log(error);
       alert('Sign in failed: ' + error.message);
@@ -67,46 +56,20 @@ export default function LoginScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
 
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tabButton, !isPhoneTab && styles.activeTab]}
-          onPress={() => setIsPhoneTab(false)}>
-          <Text style={[styles.tabText, !isPhoneTab && styles.activeTabText]}>Email</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, isPhoneTab && styles.activeTab]}
-          onPress={() => setIsPhoneTab(true)}>
-          <Text style={[styles.tabText, isPhoneTab && styles.activeTabText]}>Phone</Text>
-        </TouchableOpacity>
-      </View>
-
-      {isPhoneTab ? (
-        <TextInput
-          placeholder="Phone Number (USA)"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-          style={styles.input}
-          maxLength={14} // Format: (XXX) XXX-XXXX
-        />
-      ) : (
-        <>
-          <TextInput
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={styles.input}
-          />
-        </>
-      )}
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
 
       <TouchableOpacity style={styles.loginButton} onPress={signIn}>
         <Text style={styles.buttonText}>Login</Text>
@@ -165,26 +128,5 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginVertical: 5,
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  tabButton: {
-    padding: 10,
-    borderBottomWidth: 2,
-    borderColor: '#ccc',
-    marginHorizontal: 10,
-  },
-  activeTab: {
-    borderColor: '#FF9800',
-  },
-  tabText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  activeTabText: {
-    color: '#FF9800',
-    fontWeight: 'bold',
   },
 });
